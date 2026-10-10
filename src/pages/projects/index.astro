@@ -1,0 +1,12 @@
+---
+import ArrowLink from '../../components/ArrowLink.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Projects / Markboluo">
+  <section class="empty-page" aria-labelledby="projects-title">
+    <h1 id="projects-title">项目区域<br /><em>正在留白。</em></h1>
+    <p>未来的实验、原型和作品会从这里开始。暂时没有需要展示的项目。</p>
+    <ArrowLink href={import.meta.env.BASE_URL}>返回首页</ArrowLink>
+  </section>
+</BaseLayout>

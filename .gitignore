@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.astro/
+.npm-cache/
+.impeccable/
+.browser-*/
+
+# Local environment and editor files
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+

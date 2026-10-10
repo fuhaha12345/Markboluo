@@ -1,0 +1,54 @@
+---
+import '@fontsource-variable/manrope/wght.css';
+import '@fontsource/dm-mono/latin-400.css';
+import '@fontsource/dm-mono/latin-500.css';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Markboluo / AI learning in progress',
+  description = '一个为 AI 学习准备的个人博客空间。'
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const pathname = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+    <link rel="canonical" href={canonical} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#171917" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="brand" href={import.meta.env.BASE_URL} aria-label="返回首页">
+          <span class="brand-mark" aria-hidden="true">M</span>
+          <span>MARKBOLUO</span>
+        </a>
+        <nav class="site-nav" aria-label="主导航">
+          <a href={`${import.meta.env.BASE_URL}notes/`} aria-current={pathname.includes('/notes') ? 'page' : undefined}>Notes</a>
+          <a href={`${import.meta.env.BASE_URL}projects/`} aria-current={pathname.includes('/projects') ? 'page' : undefined}>Projects</a>
+          <a href={`${import.meta.env.BASE_URL}about/`} aria-current={pathname.includes('/about') ? 'page' : undefined}>About</a>
+        </nav>
+      </header>
+      <main id="main-content" tabindex="-1">
+        <slot />
+      </main>
+      <footer class="site-footer">
+        <span>AI / LEARNING / IN PROGRESS</span>
+        <span>© {new Date().getFullYear()} MARKBOLUO</span>
+      </footer>
+    </div>
+  </body>
+</html>

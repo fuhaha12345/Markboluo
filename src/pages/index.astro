@@ -1,0 +1,153 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import ArrowLink from '../components/ArrowLink.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout>
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <h1 id="hero-title">AI,<br /><em>in progress.</em></h1>
+      <p class="hero-intro">一个为 AI 学习准备的个人空间。先把结构搭好，再让想法慢慢进来。</p>
+      <ArrowLink href={`${import.meta.env.BASE_URL}about/`}>了解这个空间</ArrowLink>
+    </div>
+    <div class="hero-index" aria-label="站点状态">
+      <div class="index-topline">
+        <span>INDEX / 00</span>
+        <span>2026</span>
+      </div>
+      <div class="empty-orbit" aria-hidden="true">
+        <canvas class="ambient-canvas"></canvas>
+        <span class="orbit-ring orbit-ring-one"></span>
+        <span class="orbit-ring orbit-ring-two"></span>
+        <span class="orbit-core"></span>
+        <span class="orbit-label">OPEN<br />SPACE</span>
+      </div>
+      <p class="index-note">这里还没有发布内容。它正在等待第一个值得留下来的问题。</p>
+    </div>
+  </section>
+
+  <section class="section-intro" aria-labelledby="sections-title">
+    <div>
+      <h2 id="sections-title">先留下位置，<br />再留下答案。</h2>
+    </div>
+    <p class="section-description">这是一个安静的起点。未来的笔记、项目和自我介绍，会在各自的位置出现；现在，它们保持为空。</p>
+  </section>
+
+  <section class="route-list" aria-label="博客栏目">
+    <a class="route-row" href={`${import.meta.env.BASE_URL}notes/`}>
+      <span class="route-name">Notes</span>
+      <span class="route-detail">学习笔记 / 待开始</span>
+      <ArrowUpRight class="route-arrow" aria-hidden="true" size={20} stroke-width={1.5} />
+    </a>
+    <a class="route-row" href={`${import.meta.env.BASE_URL}projects/`}>
+      <span class="route-name">Projects</span>
+      <span class="route-detail">实验与作品 / 待开始</span>
+      <ArrowUpRight class="route-arrow" aria-hidden="true" size={20} stroke-width={1.5} />
+    </a>
+    <a class="route-row" href={`${import.meta.env.BASE_URL}about/`}>
+      <span class="route-name">About</span>
+      <span class="route-detail">关于这个空间 / 待补充</span>
+      <ArrowUpRight class="route-arrow" aria-hidden="true" size={20} stroke-width={1.5} />
+    </a>
+  </section>
+</BaseLayout>
+
+<script>
+  const orbit = document.querySelector<HTMLElement>('.empty-orbit');
+  const canvas = orbit?.querySelector<HTMLCanvasElement>('.ambient-canvas');
+
+  if (orbit && canvas) {
+    const context = canvas.getContext('2d', { alpha: true });
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const palette = getComputedStyle(document.documentElement);
+    const colors = {
+      action: palette.getPropertyValue('--action').trim() || '#963b2a',
+      support: palette.getPropertyValue('--support').trim() || '#526f66',
+      surface: palette.getPropertyValue('--accent-surface').trim() || '#c8d66f'
+    };
+    const particles = Array.from({ length: 16 }, (_, index) => ({
+      angle: index * 2.39996,
+      radius: 0.2 + ((index * 37) % 67) / 100,
+      size: 1.1 + (index % 3) * 0.6
+    }));
+    let frame = 0;
+    let width = 0;
+    let height = 0;
+    let pixelRatio = 1;
+
+    const resize = () => {
+      const bounds = orbit.getBoundingClientRect();
+      pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      width = Math.max(1, bounds.width);
+      height = Math.max(1, bounds.height);
+      canvas.width = Math.round(width * pixelRatio);
+      canvas.height = Math.round(height * pixelRatio);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context?.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    };
+
+    const draw = (time = 0) => {
+      if (!context) return;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const baseRadius = Math.min(width, height) * 0.36;
+      const pulse = reduceMotion.matches ? 0 : Math.sin(time * 0.00035) * 0.012;
+
+      context.clearRect(0, 0, width, height);
+      context.save();
+      context.translate(centerX, centerY);
+      context.strokeStyle = colors.support;
+      context.globalAlpha = 0.1;
+      context.lineWidth = 1;
+      [0.72, 1, 1.28].forEach((scale) => {
+        context.beginPath();
+        context.arc(0, 0, baseRadius * scale, 0, Math.PI * 2);
+        context.stroke();
+      });
+      context.restore();
+
+      particles.forEach((particle, index) => {
+        const orbitRadius = baseRadius * (particle.radius + pulse);
+        const angle = particle.angle + (reduceMotion.matches ? 0 : time * 0.000018 * (index % 2 ? 1 : -1));
+        const x = centerX + Math.cos(angle) * orbitRadius;
+        const y = centerY + Math.sin(angle) * orbitRadius * 0.56;
+        context.beginPath();
+        context.fillStyle = index % 4 === 0 ? colors.action : colors.surface;
+        context.globalAlpha = index % 4 === 0 ? 0.25 : 0.16;
+        context.arc(x, y, particle.size, 0, Math.PI * 2);
+        context.fill();
+      });
+      context.globalAlpha = 1;
+    };
+
+    const tick = (time: number) => {
+      draw(time);
+      if (!reduceMotion.matches) frame = requestAnimationFrame(tick);
+    };
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !reduceMotion.matches && !frame) frame = requestAnimationFrame(tick);
+      if (!entry.isIntersecting && frame) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      }
+    }, { threshold: 0.05 });
+
+    resize();
+    draw();
+    observer.observe(orbit);
+    new ResizeObserver(resize).observe(orbit);
+    window.addEventListener('resize', resize, { passive: true });
+    reduceMotion.addEventListener('change', () => {
+      if (reduceMotion.matches && frame) cancelAnimationFrame(frame);
+      frame = 0;
+      draw();
+      if (!reduceMotion.matches) {
+        const bounds = orbit.getBoundingClientRect();
+        if (bounds.bottom > 0 && bounds.top < window.innerHeight) frame = requestAnimationFrame(tick);
+      }
+    });
+  }
+</script>

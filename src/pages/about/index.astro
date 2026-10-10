@@ -1,0 +1,12 @@
+---
+import ArrowLink from '../../components/ArrowLink.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About / Markboluo">
+  <section class="empty-page" aria-labelledby="about-title">
+    <h1 id="about-title">关于这个空间。</h1>
+    <p>个人信息和介绍会在准备好之后补充。这个页面先负责把位置留出来。</p>
+    <ArrowLink href={import.meta.env.BASE_URL}>返回首页</ArrowLink>
+  </section>
+</BaseLayout>

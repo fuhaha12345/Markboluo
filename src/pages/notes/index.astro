@@ -1,0 +1,12 @@
+---
+import ArrowLink from '../../components/ArrowLink.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Notes / Markboluo">
+  <section class="empty-page" aria-labelledby="notes-title">
+    <h1 id="notes-title">还没有笔记。</h1>
+    <p>这部分会在第一篇内容准备好之后开启。现在保持空白。</p>
+    <ArrowLink href={import.meta.env.BASE_URL}>返回首页</ArrowLink>
+  </section>
+</BaseLayout>
